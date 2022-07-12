@@ -14,10 +14,9 @@
             <div class="container gx-2">
                 <div class="row gx-3 bg-light py-3">
                     <div class="col-md-4">
-                        <div class="list-group" v-for="(item, i) in products" :key="i"
-                             @click.prevent="selectProduct(item)"
-                             :class="{'active': itemSelected.i === item.i}">
-                            <a href="#" class="list-group-item list-group-item-action">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action" v-for="(item, i) in products" :key="'products' + i" @click.prevent="selectProduct(item)"
+                               :class="{'active': itemSelected.name === item.name}">
                                 <h6 class="card-title mb-1">{{ item.name }}</h6>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <p class="mb-0"><small>{{ item.engName }}</small></p>
@@ -32,39 +31,39 @@
                             <div class="card-body px-4">
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label" >數量</label>
-                                    <input type="number" class="form-control" id="productNum" placeholder="數量" min="0" v-model="itemSelected.count">
+                                    <input type="number" class="form-control" id="productNum" placeholder="數量" min="1" v-model="itemSelected.count">
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">冰塊*</label>
-                                    <div class="form-check form-check-inline" v-for="(iceItem, i) in iceType" :key="i">
+                                    <div class="form-check form-check-inline" v-for="(iceItem, i) in iceType" :key="'ice' + i">
                                         <input class="form-check-input" name="iceType" type="radio"
-                                               :id="'iceItem' + i"
+                                               :id="'ice' + i"
                                                :value="iceItem"
                                                v-model="itemSelected.itemIceType"
                                         >
-                                        <label class="form-check-label" :for="'iceItem' + i">{{ iceItem }}</label>
+                                        <label class="form-check-label" :for="'ice' + i">{{ iceItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">甜度*</label>
                                     <div class="form-check form-check-inline"
-                                         v-for="(sugarItem, i) in sugarType" :key="i">
+                                         v-for="(sugarItem, i) in sugarType" :key="'sugar' + i">
                                         <input class="form-check-input" name="sugarType" type="radio"
-                                               :id="'sugarItem' + i"
+                                               :id="'sugar' + i"
                                                :value="sugarItem"
                                                v-model="itemSelected.itemSugarType">
-                                        <label class="form-check-label" :for="'sugarItem' + i">{{ sugarItem }}</label>
+                                        <label class="form-check-label" :for="'sugar' + i">{{ sugarItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">加料</label>
-                                    <div class="form-check form-check-inline" v-for="(toppingsItem, i) in toppingsType" :key="'toppingsItem' + i" >
+                                    <div class="form-check form-check-inline" v-for="(toppingsItem, i) in toppingsType" :key="'toppings' + i" >
                                         <input class="form-check-input" type="checkbox"
                                                :value="toppingsItem"
                                                v-model="itemSelected.itemToppings"
-                                               :id="'toppingsItem' + i">
+                                               :id="'toppings' + i">
                                         <label class="form-check-label"
-                                               :for="'toppingsItem' + i">{{ toppingsItem }}</label>
+                                               :for="'toppings' + i">{{ toppingsItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -77,7 +76,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card" v-if="isShow">
                             <div class="card-body">
                                 <table class="table">
                                     <thead>
@@ -114,106 +113,109 @@
             </div>
         </div>
 <script>
-        const App = {
+    const App = {
         data() {
-        return {
-        itemSelected:{},
-        orderList: [],
-        orderTotalPrice: 0,
-        iceType: ['正常冰', '少冰', '微冰', '去冰', '熱'],
-        sugarType: ['全糖', '七分', '半糖', '三分', '無糖'],
-        toppingsType: ['珍珠', '粉條', '小粉圓', '椰果', '芋頭'],
-        products: [
-        {
-        name: '珍珠鮮奶茶',
-        engName: 'Pearl Milk Tea',
-        price: 60,
-        },
-        {
-        name: '鮮奶茶',
-        engName: 'Milk Tea',
-        price: 50,
-        },
-        {
-        name: '古意冬瓜茶',
-        engName: 'Winter Melon Drink',
-        price: 30,
-        },
-        {
-        name: '蜜香紅茶',
-        engName: 'Black Tea',
-        price: 30,
-        },
-        {
-        name: '包種青茶',
-        engName: 'Black Tea',
-        price: 35,
-        },
-        {
-        name: '檸檬烏龍',
-        engName: 'Lemon Oolong Tea',
-        price: 55,
-        },
-        {
-        name: '薑母茶',
-        engName: 'Ginger Tea',
-        price: 55,
-        },
-        {
-        name: '青草茶',
-        engName: 'Herbal Tea',
-        price: 35,
-        },
-        {
-        name: '金桔檸檬',
-        engName: 'Kumquat Lemonade',
-        price: 40,
-        },
-        {
-        name: '柳澄青茶',
-        engName: 'Orange Mountain Tea',
-        price: 45,
-        },
-        ],
-        }
+            return {
+                isShow: false,
+                itemSelected:{},
+                orderList: [],
+                orderTotalPrice: 0,
+                iceType: ['正常冰', '少冰', '微冰', '去冰', '熱'],
+                sugarType: ['全糖', '七分', '半糖', '三分', '無糖'],
+                toppingsType: ['珍珠', '粉條', '小粉圓', '椰果', '芋頭'],
+                products: [
+                    {
+                        name: '珍珠鮮奶茶',
+                        engName: 'Pearl Milk Tea',
+                        price: 60,
+                    },
+                    {
+                        name: '鮮奶茶',
+                        engName: 'Milk Tea',
+                        price: 50,
+                    },
+                    {
+                        name: '古意冬瓜茶',
+                        engName: 'Winter Melon Drink',
+                        price: 30,
+                    },
+                    {
+                        name: '蜜香紅茶',
+                        engName: 'Black Tea',
+                        price: 30,
+                    },
+                    {
+                        name: '包種青茶',
+                        engName: 'Black Tea',
+                        price: 35,
+                    },
+                    {
+                        name: '檸檬烏龍',
+                        engName: 'Lemon Oolong Tea',
+                        price: 55,
+                    },
+                    {
+                        name: '薑母茶',
+                        engName: 'Ginger Tea',
+                        price: 55,
+                    },
+                    {
+                        name: '青草茶',
+                        engName: 'Herbal Tea',
+                        price: 35,
+                    },
+                    {
+                        name: '金桔檸檬',
+                        engName: 'Kumquat Lemonade',
+                        price: 40,
+                    },
+                    {
+                        name: '柳澄青茶',
+                        engName: 'Orange Mountain Tea',
+                        price: 45,
+                    },
+                ],
+            }
         },
         methods: {
-        selectProduct(pruduct){
-        this.itemSelected={
-        ...pruduct,
-        itemIceType: '正常冰',
-        itemSugarType: '全糖',
-        itemToppings: [],
-        count: 1,
-        notice: '',
-        checkedValue: ''
-        }
+            selectProduct(pruduct){
+                this.itemSelected={
+                    ...pruduct,
+                    itemIceType: '正常冰',
+                    itemSugarType: '全糖',
+                    itemToppings: [],
+                    count: 1,
+                    notice: '',
+                    checkedValue: ''
+                }
+            },
+            countTotalPrice(){
+                this.orderTotalPrice = 0
+                this.orderList.forEach((item) => {
+                    this.orderTotalPrice += item.total
+                })
+            },
+            resetOrder(){
+                this.itemSelected = {}
+            },
+            addToOrder(product){
+                const order = {
+                    ...product,
+                    total: ( product.price + product.itemToppings.length * 10) * product.count,
+                }
+                this.orderList.push(order)
+                this.countTotalPrice()
+                this.resetOrder()
+                this.isShow = true
+            },
+            deleteOrder(){
+                this.orderList = []
+                this.isShow = false
+            }
         },
-        countTotalPrice(){
-        this.orderTotalPrice = 0
-        this.orderList.forEach((item) => {
-        this.orderTotalPrice += item.total
-        })
-        },
-        resetOrder(){
-        this.itemSelected = {}
-        },
-        addToOrder(product){
-        const order = {
-        ...product,
-        total: ( product.price + product.itemToppings.length * 10) * product.count,
-        }
-        this.orderList.push(order)
-        this.countTotalPrice()
-        this.resetOrder()
-        },
-        deleteOrder(){
-        this.orderList = []
-        }
-        },
-        };
+    };
 
-        Vue.createApp(App).mount('#app');
+    Vue.createApp(App).mount('#app');
 </script>
     </body>
 </html>
