@@ -14,9 +14,10 @@
             <div class="container gx-2">
                 <div class="row gx-3 bg-light py-3">
                     <div class="col-md-4">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action" v-for="(item, i) in products" :key="'products' + i" @click.prevent="selectProduct(item)"
-                               :class="{'active': itemSelected.name === item.name}">
+                        <div class="list-group" v-for="(item, key) in products" :key="key"
+                             @click.prevent="selectProduct(item)"
+                             :class="{'active': itemSelected.key === item.key}">
+                            <a href="#" class="list-group-item list-group-item-action">
                                 <h6 class="card-title mb-1">{{ item.name }}</h6>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <p class="mb-0"><small>{{ item.engName }}</small></p>
@@ -27,43 +28,46 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card mb-2">
-                            <div class="position-absolute text-white d-flex align-items-center justify-content-center active" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;" v-if="!itemSelected.name">請先選擇飲品</div>
+                            <div class="position-absolute text-white d-flex align-items-center justify-content-center active" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;"
+                                 v-if="!itemSelected.name">請先選擇飲品</div>
                             <div class="card-body px-4">
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label" >數量</label>
-                                    <input type="number" class="form-control" id="productNum" placeholder="數量" min="1" v-model="itemSelected.count">
+                                    <input type="number" class="form-control" id="productNum" placeholder="數量" min="0" v-model="itemSelected.count">
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">冰塊*</label>
-                                    <div class="form-check form-check-inline" v-for="(iceItem, i) in iceType" :key="'ice' + i">
+                                    <div class="form-check form-check-inline" v-for="(iceItem, key) in iceType" :key="key">
                                         <input class="form-check-input" name="iceType" type="radio"
-                                               :id="'ice' + i"
+                                               :id="'iceItem' + key"
                                                :value="iceItem"
                                                v-model="itemSelected.itemIceType"
                                         >
-                                        <label class="form-check-label" :for="'ice' + i">{{ iceItem }}</label>
+                                        <label class="form-check-label" :for="'iceItem' + key">{{ iceItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">甜度*</label>
                                     <div class="form-check form-check-inline"
-                                         v-for="(sugarItem, i) in sugarType" :key="'sugar' + i">
+                                         v-for="(sugarItem, key) in sugarType" :key="key">
                                         <input class="form-check-input" name="sugarType" type="radio"
-                                               :id="'sugar' + i"
+                                               :id="'sugarItem' + key"
                                                :value="sugarItem"
-                                               v-model="itemSelected.itemSugarType">
-                                        <label class="form-check-label" :for="'sugar' + i">{{ sugarItem }}</label>
+                                               v-model="itemSelected.itemSugarType"
+                                        >
+                                        <label class="form-check-label" :for="'sugarItem' + key">{{ sugarItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="productNum" class="form-label d-block">加料</label>
-                                    <div class="form-check form-check-inline" v-for="(toppingsItem, i) in toppingsType" :key="'toppings' + i" >
+                                    <div class="form-check form-check-inline" v-for="(toppingsItem, key) in toppingsType" :key="'toppingsItem' + key" >
                                         <input class="form-check-input" type="checkbox"
                                                :value="toppingsItem"
                                                v-model="itemSelected.itemToppings"
-                                               :id="'toppings' + i">
+                                               :id="'toppingsItem' + key"
+                                        >
                                         <label class="form-check-label"
-                                               :for="'toppings' + i">{{ toppingsItem }}</label>
+                                               :for="'toppingsItem' + key">{{ toppingsItem }}</label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -76,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card" v-if="isShow">
+                        <div class="card">
                             <div class="card-body">
                                 <table class="table">
                                     <thead>
@@ -91,7 +95,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(item, i) in orderList" :key="'order' + i">
+                                        <tr v-for="(item, key) in orderList" :key="'order' + key">
                                             <th scope="row" >{{ item.name }}<br>
                                                 <small class="text-muted fw-normal" v-if="item.notice !== ''">備註:{{ item.notice }}</small>
                                             </th>
